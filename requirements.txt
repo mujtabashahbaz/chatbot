@@ -2,6 +2,7 @@ fastapi
 uvicorn
 langgraph
 langsmith
+langchain_community
 langchain-openai
 tavily-python
 typing-extensions
