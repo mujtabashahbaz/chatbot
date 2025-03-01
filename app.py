@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from typing import Dict
+import os
 
 # Import LangGraph chatbot logic
 from langchain_openai import ChatOpenAI
@@ -10,17 +11,14 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 
-from typing import Annotated
-from typing_extensions import TypedDict  # Ensure this import is present
-from langgraph.graph.message import add_messages
-
+# Define the State with custom fields
 class State(TypedDict):
     messages: Annotated[list, add_messages]
-    name: str = ""
-    birthday: str = ""
+
+# Create a MemorySaver for checkpointing
+memory = MemorySaver()
 
 # Initialize the graph builder
-memory = MemorySaver()
 graph_builder = StateGraph(State)
 
 # Define tools
@@ -28,7 +26,11 @@ tool = TavilySearchResults(max_results=2)
 tools = [tool]
 
 # Initialize the LLM with OpenAI and bind tools
-llm = ChatOpenAI(model="gpt-4o", api_key="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")
+openai_api_key = os.getenv("OPENAI_API_KEY")  # Fetch OpenAI API key from environment variable
+if not openai_api_key:
+    raise ValueError("OPENAI_API_KEY environment variable is not set.")
+
+llm = ChatOpenAI(model="gpt-4o", api_key=openai_api_key)
 llm_with_tools = llm.bind_tools(tools)
 
 # Define the chatbot node
