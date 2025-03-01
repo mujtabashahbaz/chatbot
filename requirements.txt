@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+langgraph
+langsmith
+langchain-openai
+tavily-python
+typing-extensions
