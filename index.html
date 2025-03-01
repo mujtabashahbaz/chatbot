@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LangGraph Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #chat-box { height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; }
+        #input-box { width: 80%; padding: 10px; }
+        #send-btn { padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>LangGraph Chatbot</h1>
+    <div id="chat-box"></div>
+    <input type="text" id="input-box" placeholder="Type your message...">
+    <button id="send-btn">Send</button>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const inputBox = document.getElementById('input-box');
+        const sendBtn = document.getElementById('send-btn');
+
+        let threadId = "1"; // Unique thread ID for the session
+
+        sendBtn.onclick = async () => {
+            const userInput = inputBox.value.trim();
+            if (!userInput) return;
+
+            // Display user message
+            chatBox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
+            inputBox.value = "";
+
+            // Send request to the backend
+            const response = await fetch('https://chatbot-blrt.onrender.com/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_input: userInput, thread_id: threadId })
+            });
+
+            const data = await response.json();
+
+            // Display assistant response
+            chatBox.innerHTML += `<p><strong>Assistant:</strong> ${data.assistant_response}</p>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
+    </script>
+</body>
+</html>
